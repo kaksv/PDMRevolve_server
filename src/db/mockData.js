@@ -1,0 +1,48 @@
+const dashboard = {
+  metrics: {
+    onTimeRepaymentRate: 82,
+    fullRepaymentRate: 74,
+    educationCompletionRate: 68,
+  },
+  topParishes: [
+    { parishName: 'Kiboga Central', households: 134, repaymentRate: 91 },
+    { parishName: 'Nakasozi', households: 102, repaymentRate: 87 },
+    { parishName: 'Bukunja', households: 88, repaymentRate: 84 },
+  ],
+}
+
+const repayments = [
+  {
+    providerTransactionId: 'WENDI-000921',
+    beneficiaryPhone: '+256701000111',
+    amount: 120000,
+    status: 'success',
+    transactionTime: '2026-04-20T08:16:00.000Z',
+  },
+  {
+    providerTransactionId: 'WENDI-000922',
+    beneficiaryPhone: '+256702000222',
+    amount: 95000,
+    status: 'success',
+    transactionTime: '2026-04-20T09:10:00.000Z',
+  },
+]
+
+const educationModules = [
+  {
+    code: 'REPAY-101',
+    title: 'Why Full Repayment Unlocks More Capital',
+    languageCode: 'en',
+    channelType: 'sms',
+    summary: 'Build trust with SACCOs and qualify faster for next-cycle loans.',
+  },
+  {
+    code: 'SAVE-201',
+    title: 'Daily Record Keeping for Small Enterprises',
+    languageCode: 'lg',
+    channelType: 'ussd',
+    summary: 'Track expenses and sales to avoid cash flow shocks.',
+  },
+]
+
+module.exports = { dashboard, repayments, educationModules }
