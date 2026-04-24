@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
-    "db:migrate": "node src/scripts/runMigration.js"
+    "db:migrate": "node src/scripts/runMigration.js",
+    "wendi:sign": "node src/scripts/generateWendiSignature.js"
   },
   "keywords": [],
   "author": "",

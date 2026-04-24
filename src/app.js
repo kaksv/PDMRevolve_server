@@ -10,9 +10,22 @@ const educationRoute = require('./routes/education')
 const integrationsWendiRoute = require('./routes/integrationsWendi')
 
 const app = express()
+const allowedOrigins = env.corsOrigin
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
 
 app.use(helmet())
-app.use(cors({ origin: env.corsOrigin === '*' ? true : env.corsOrigin.split(',') }))
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (env.corsOrigin === '*' || !origin || allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      }
+      return callback(new Error('Not allowed by CORS'))
+    },
+  }),
+)
 app.use(express.json())
 app.use(morgan('dev'))
 

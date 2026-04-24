@@ -15,11 +15,13 @@ const webhookSchema = z.object({
   timestamp: z.string().datetime(),
 })
 
+function createSignature(payload, secret) {
+  return crypto.createHmac('sha256', secret).update(payload).digest('hex')
+}
+
 function isValidSignature(payload, signature, secret) {
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(payload)
-    .digest('hex')
+  const expected = createSignature(payload, secret)
+  if (signature.length !== expected.length) return false
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
 }
 
@@ -34,8 +36,7 @@ router.post('/webhook', async (req, res, next) => {
       }
 
       const bodyRaw = JSON.stringify(req.body)
-      const safeCompare =
-        signature.length === 64 && isValidSignature(bodyRaw, signature, secret)
+      const safeCompare = isValidSignature(bodyRaw, signature, secret)
 
       if (!safeCompare) {
         return res.status(401).json({ error: 'Invalid webhook signature.' })
@@ -68,6 +69,22 @@ router.post('/webhook', async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+})
+
+router.post('/test-signature', (req, res) => {
+  if (env.nodeEnv === 'production' && !env.enableTestSignatureEndpoint) {
+    return res.status(404).json({ error: 'Not found.' })
+  }
+
+  if (!env.wendiWebhookSecret) {
+    return res
+      .status(400)
+      .json({ error: 'WENDI_WEBHOOK_SECRET is required to generate signatures.' })
+  }
+
+  const payload = JSON.stringify(req.body || {})
+  const signature = createSignature(payload, env.wendiWebhookSecret)
+  return res.json({ signature, payload })
 })
 
 module.exports = router

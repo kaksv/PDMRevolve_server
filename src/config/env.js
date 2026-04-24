@@ -8,6 +8,7 @@ const env = {
   databaseUrl: process.env.DATABASE_URL || '',
   corsOrigin: process.env.CORS_ORIGIN || '*',
   wendiWebhookSecret: process.env.WENDI_WEBHOOK_SECRET || '',
+  enableTestSignatureEndpoint: process.env.ENABLE_TEST_SIGNATURE_ENDPOINT === 'true',
 }
 
 module.exports = { env }

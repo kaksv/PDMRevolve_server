@@ -1,0 +1,82 @@
+{
+  "info": {
+    "name": "PDMRevolve Wendi Webhook",
+    "_postman_id": "0f1c4f4a-7c90-4f6c-b7c3-834813c0c8d2",
+    "description": "Helpers for generating HMAC signatures and testing Wendi webhook ingestion.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1) Generate Signature (test endpoint)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"eventType\": \"payment.success\",\n  \"transactionId\": \"WENDI-POSTMAN-001\",\n  \"status\": \"success\",\n  \"amount\": 120000,\n  \"payerPhone\": \"+256701000111\",\n  \"timestamp\": \"2026-04-24T12:30:00.000Z\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/api/integrations/wendi/test-signature",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "api",
+            "integrations",
+            "wendi",
+            "test-signature"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2) Send Webhook (signed)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-wendi-signature",
+            "value": "{{wendiSignature}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"eventType\": \"payment.success\",\n  \"transactionId\": \"WENDI-POSTMAN-001\",\n  \"status\": \"success\",\n  \"amount\": 120000,\n  \"payerPhone\": \"+256701000111\",\n  \"timestamp\": \"2026-04-24T12:30:00.000Z\"\n}"
+        },
+        "url": {
+          "raw": "{{apiBaseUrl}}/api/integrations/wendi/webhook",
+          "host": [
+            "{{apiBaseUrl}}"
+          ],
+          "path": [
+            "api",
+            "integrations",
+            "wendi",
+            "webhook"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "apiBaseUrl",
+      "value": "http://localhost:4000"
+    },
+    {
+      "key": "wendiSignature",
+      "value": ""
+    }
+  ]
+}
