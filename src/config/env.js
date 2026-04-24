@@ -7,6 +7,7 @@ const env = {
   port: Number(process.env.PORT || 4000),
   databaseUrl: process.env.DATABASE_URL || '',
   corsOrigin: process.env.CORS_ORIGIN || '*',
+  wendiWebhookSecret: process.env.WENDI_WEBHOOK_SECRET || '',
 }
 
 module.exports = { env }

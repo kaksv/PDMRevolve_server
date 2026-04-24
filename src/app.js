@@ -7,6 +7,7 @@ const healthRoute = require('./routes/health')
 const dashboardRoute = require('./routes/dashboard')
 const repaymentsRoute = require('./routes/repayments')
 const educationRoute = require('./routes/education')
+const integrationsWendiRoute = require('./routes/integrationsWendi')
 
 const app = express()
 
@@ -19,6 +20,7 @@ app.use('/api/health', healthRoute)
 app.use('/api/dashboard', dashboardRoute)
 app.use('/api/repayments', repaymentsRoute)
 app.use('/api/education', educationRoute)
+app.use('/api/integrations/wendi', integrationsWendiRoute)
 
 app.use((err, _req, res, _next) => {
   // Keep internal errors out of the client response.

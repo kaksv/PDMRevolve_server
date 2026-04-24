@@ -8,20 +8,27 @@ async function run() {
     throw new Error('DATABASE_URL is required for migrations.')
   }
 
-  const sqlPath = path.join(__dirname, '../../db/migrations/001_init.sql')
-  const sql = await fs.readFile(sqlPath, 'utf8')
+  const migrationsDir = path.join(__dirname, '../../db/migrations')
+  const files = (await fs.readdir(migrationsDir))
+    .filter((file) => file.endsWith('.sql'))
+    .sort()
 
-  await pool.query('BEGIN')
-  try {
-    await pool.query(sql)
-    await pool.query('COMMIT')
-    console.log('Migration applied successfully.')
-  } catch (error) {
-    await pool.query('ROLLBACK')
-    throw error
-  } finally {
-    await pool.end()
+  for (const file of files) {
+    const sqlPath = path.join(migrationsDir, file)
+    const sql = await fs.readFile(sqlPath, 'utf8')
+
+    await pool.query('BEGIN')
+    try {
+      await pool.query(sql)
+      await pool.query('COMMIT')
+      console.log(`Migration applied: ${file}`)
+    } catch (error) {
+      await pool.query('ROLLBACK')
+      throw error
+    }
   }
+
+  await pool.end()
 }
 
 run().catch((error) => {
