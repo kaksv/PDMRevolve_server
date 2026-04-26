@@ -9,6 +9,7 @@ Express + PostgreSQL API for `PDMRevolve`.
   - `GET /api/dashboard`
   - `GET /api/repayments`
   - `GET /api/education/modules`
+  - `GET /api/education/modules/:code`
   - `POST /api/integrations/wendi/webhook`
 - PostgreSQL integration using `pg`
 - SQL migration script runner
@@ -34,6 +35,8 @@ Required/used:
 - `PORT` (default `4000`)
 - `DATABASE_URL` (Render Internal DB URL in production)
 - `CORS_ORIGIN` (single origin or comma-separated list, e.g. Vercel + mapped domain)
+
+`GET /api/dashboard` includes `meta.generatedAt` (ISO timestamp when the response was built) and `meta.dataAsOf` (latest `created_at` across dashboard seed tables and repayments, when using PostgreSQL).
 - `WENDI_WEBHOOK_SECRET` (optional HMAC secret for webhook verification)
 - `ENABLE_TEST_SIGNATURE_ENDPOINT` (`true` to enable signature helper endpoint in production)
 
@@ -52,7 +55,7 @@ Server runs on `http://localhost:4000`.
 npm run db:migrate
 ```
 
-This runs `src/scripts/runMigration.js`, applying all SQL files in `db/migrations` in filename order.
+This runs `src/scripts/runMigration.js`, scanning SQL files in `db/migrations` in filename order and applying only files not already recorded in `schema_migrations`.
 
 ## Render deployment
 

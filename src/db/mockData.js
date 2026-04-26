@@ -35,6 +35,8 @@ const educationModules = [
     languageCode: 'en',
     channelType: 'sms',
     summary: 'Build trust with SACCOs and qualify faster for next-cycle loans.',
+    contentUri: null,
+    estimatedMinutes: 8,
   },
   {
     code: 'SAVE-201',
@@ -42,6 +44,8 @@ const educationModules = [
     languageCode: 'lg',
     channelType: 'ussd',
     summary: 'Track expenses and sales to avoid cash flow shocks.',
+    contentUri: null,
+    estimatedMinutes: 5,
   },
 ]
 

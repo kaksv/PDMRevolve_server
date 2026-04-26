@@ -1,11 +1,24 @@
 const { getPool } = require('../db/pool')
 const { dashboard, repayments, educationModules } = require('../db/mockData')
 
-async function getDashboard() {
-  const pool = getPool()
-  if (!pool) return dashboard
+function dashboardMeta(generatedAt, dataAsOf) {
+  return {
+    generatedAt,
+    dataAsOf: dataAsOf || null,
+  }
+}
 
-  const [metricsResult, parishResult] = await Promise.all([
+async function getDashboard() {
+  const generatedAt = new Date().toISOString()
+  const pool = getPool()
+  if (!pool) {
+    return {
+      ...dashboard,
+      meta: dashboardMeta(generatedAt, null),
+    }
+  }
+
+  const [metricsResult, parishResult, dataAsOfResult] = await Promise.all([
     pool.query(
       `
       SELECT
@@ -23,9 +36,23 @@ async function getDashboard() {
       LIMIT 5
       `,
     ),
+    pool.query(
+      `
+      SELECT GREATEST(
+        COALESCE((SELECT MAX(created_at) FROM dashboard_metrics), TIMESTAMPTZ '1970-01-01'),
+        COALESCE((SELECT MAX(created_at) FROM top_parishes), TIMESTAMPTZ '1970-01-01'),
+        COALESCE((SELECT MAX(created_at) FROM repayment_transactions), TIMESTAMPTZ '1970-01-01')
+      ) AS data_as_of
+      `,
+    ),
   ])
 
   const m = metricsResult.rows[0] || {}
+  const rawAsOf = dataAsOfResult.rows[0]?.data_as_of
+  const epoch = new Date('1970-01-01T00:00:00.000Z').getTime()
+  const dataAsOfIso =
+    rawAsOf && new Date(rawAsOf).getTime() > epoch ? new Date(rawAsOf).toISOString() : null
+
   return {
     metrics: {
       onTimeRepaymentRate: Number(m.on_time_repayment_rate || 0),
@@ -37,6 +64,7 @@ async function getDashboard() {
       households: Number(row.households),
       repaymentRate: Number(row.repayment_rate),
     })),
+    meta: dashboardMeta(generatedAt, dataAsOfIso),
   }
 }
 
@@ -68,7 +96,7 @@ async function getEducationModules() {
 
   const result = await pool.query(
     `
-    SELECT code, title, language_code, channel_type, summary
+    SELECT code, title, language_code, channel_type, summary, content_uri, estimated_minutes
     FROM education_modules
     WHERE is_active = TRUE
     ORDER BY created_at DESC
@@ -82,7 +110,47 @@ async function getEducationModules() {
     languageCode: row.language_code,
     channelType: row.channel_type,
     summary: row.summary,
+    contentUri: row.content_uri || null,
+    estimatedMinutes: row.estimated_minutes != null ? Number(row.estimated_minutes) : null,
   }))
 }
 
-module.exports = { getDashboard, getRepayments, getEducationModules }
+async function getEducationModuleByCode(code) {
+  const pool = getPool()
+  if (!pool) {
+    const row = educationModules.find((m) => m.code === code)
+    if (!row) return null
+    return {
+      ...row,
+      contentUri: row.contentUri ?? null,
+      estimatedMinutes: row.estimatedMinutes ?? null,
+      createdAt: null,
+    }
+  }
+
+  const result = await pool.query(
+    `
+    SELECT code, title, language_code, channel_type, summary, content_uri, estimated_minutes, created_at
+    FROM education_modules
+    WHERE code = $1 AND is_active = TRUE
+    LIMIT 1
+    `,
+    [code],
+  )
+
+  if (result.rowCount === 0) return null
+
+  const row = result.rows[0]
+  return {
+    code: row.code,
+    title: row.title,
+    languageCode: row.language_code,
+    channelType: row.channel_type,
+    summary: row.summary,
+    contentUri: row.content_uri || null,
+    estimatedMinutes: row.estimated_minutes != null ? Number(row.estimated_minutes) : null,
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : null,
+  }
+}
+
+module.exports = { getDashboard, getRepayments, getEducationModules, getEducationModuleByCode }
