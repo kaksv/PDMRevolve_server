@@ -37,6 +37,12 @@ const educationModules = [
     summary: 'Build trust with SACCOs and qualify faster for next-cycle loans.',
     contentUri: null,
     estimatedMinutes: 8,
+    videoUrl: 'https://www.youtube.com/watch?v=9No-FiEInLA',
+    textContent:
+      'Repayment is your pathway to bigger capital. Keep records of each payment, track due dates, and share progress with your SACCO group leaders.',
+    defaultFormat: 'video',
+    estimatedMinutesVideo: 8,
+    estimatedMinutesText: 4,
   },
   {
     code: 'SAVE-201',
@@ -46,6 +52,12 @@ const educationModules = [
     summary: 'Track expenses and sales to avoid cash flow shocks.',
     contentUri: null,
     estimatedMinutes: 5,
+    videoUrl: null,
+    textContent:
+      'Write down all your daily sales and expenses in one notebook. At week end, compare totals and plan next week buying carefully.',
+    defaultFormat: 'text',
+    estimatedMinutesVideo: null,
+    estimatedMinutesText: 5,
   },
 ]
 

@@ -10,6 +10,7 @@ Express + PostgreSQL API for `PDMRevolve`.
   - `GET /api/repayments`
   - `GET /api/education/modules`
   - `GET /api/education/modules/:code`
+  - `PUT /api/education/modules/:code`
   - `POST /api/integrations/wendi/webhook`
 - PostgreSQL integration using `pg`
 - SQL migration script runner
@@ -39,6 +40,12 @@ Required/used:
 `GET /api/dashboard` includes `meta.generatedAt` (ISO timestamp when the response was built) and `meta.dataAsOf` (latest `created_at` across dashboard seed tables and repayments, when using PostgreSQL).
 - `WENDI_WEBHOOK_SECRET` (optional HMAC secret for webhook verification)
 - `ENABLE_TEST_SIGNATURE_ENDPOINT` (`true` to enable signature helper endpoint in production)
+
+Education modules can now support both formats in one record:
+- `video_url` (optional)
+- `text_content` (optional)
+- `default_format` (`video` or `text`)
+- `estimated_minutes_video` / `estimated_minutes_text`
 
 ## Local development
 
